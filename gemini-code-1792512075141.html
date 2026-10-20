@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revisão de História - 3º Ano (Módulos 12 e 13)</title>
+  <style>
+    :root {
+      --primary: #1565c0;
+      --primary-light: #e3f2fd;
+      --secondary: #2e7d32;
+      --accent: #f57c00;
+      --text: #2c3e50;
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --correct: #2e7d32;
+      --incorrect: #c62828;
+      --border-radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1565c0, #1e88e5);
+      color: white;
+      padding: 25px 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.3);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #ffeb3b;
+      transition: width 0.3s ease;
+    }
+
+    .quiz-layout {
+      display: flex;
+      flex-direction: column;
+      padding: 25px 30px;
+    }
+
+    /* Question Navigator Menu */
+    .nav-section {
+      margin-bottom: 25px;
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #e9ecef;
+    }
+
+    .nav-title {
+      font-size: 0.85rem;
+      font-weight:bold;
+      color: #6c757d;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+      gap: 8px;
+    }
+
+    .grid-btn {
+      aspect-ratio: 1;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      background-color: #fff;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .grid-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .grid-btn.active {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .grid-btn.confirmed-correct {
+      background-color: var(--correct);
+      color: white;
+      border-color: var(--correct);
+    }
+
+    .grid-btn.confirmed-incorrect {
+      background-color: var(--incorrect);
+      color: white;
+      border-color: var(--incorrect);
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .badge {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 25px;
+      color: #1a252f;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      background-color: #fff;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      font-weight: 600;
+    }
+
+    .option-btn.correct {
+      border-color: var(--correct);
+      background-color: #e8f5e9;
+      color: var(--correct);
+      font-weight: 600;
+    }
+
+    .option-btn.incorrect {
+      border-color: var(--incorrect);
+      background-color: #ffebee;
+      color: var(--incorrect);
+    }
+
+    .option-letter {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 14px;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+
+    .feedback-box {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      display: none;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .feedback-box.correct {
+      background-color: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      color: #1b5e20;
+    }
+
+    .feedback-box.incorrect {
+      background-color: #ffebee;
+      border: 1px solid #ef9a9a;
+      color: #b71c1c;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary {
+      background-color: #e0e0e0;
+      color: #424242;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #d5d5d5;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: #0d47a1;
+    }
+
+    .btn-confirm {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .btn-confirm:hover:not(:disabled) {
+      background-color: #e65100;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .report-container {
+      display: none;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .score-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      border: 6px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 20px auto;
+    }
+
+    .score-number {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .score-label {
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 25px 0;
+    }
+
+    .stat-card {
+      padding: 15px;
+      border-radius: 12px;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-bottom: 5px;
+    }
+
+    .stat-card p {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .study-guide {
+      text-align: left;
+      background-color: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .study-guide h3 {
+      color: #f57f17;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .study-guide ul {
+      padding-left: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .quiz-layout, .report-container {
+        padding: 20px;
+      }
+      .question-text {
+        font-size: 1rem;
+      }
+      .btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+      }
+      .question-grid {
+        grid-template-columns: repeat(8, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Revisão de História - 3º Ano</h1>
+      <p>Campo, Cidade, Alimentação, Trabalho e Lazer</p>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+    </header>
+
+    <!-- Quiz View -->
+    <div class="quiz-layout" id="quiz-view">
+      
+      <!-- Menu de Navegação Direta -->
+      <div class="nav-section">
+        <div class="nav-title">Navegação das Questões (Clique para ir direto)</div>
+        <div class="question-grid" id="question-grid">
+          <!-- Botões de 1 a 40 serão gerados dinamicamente -->
+        </div>
+      </div>
+
+      <div class="question-header">
+        <span class="badge" id="question-badge">Questão 1 de 40</span>
+        <span class="badge" id="topic-badge">Tópico</span>
+      </div>
+
+      <div class="question-text" id="question-text">
+        Carregando pergunta...
+      </div>
+
+      <div class="options" id="options-container">
+        <!-- Alternativas dinâmicas -->
+      </div>
+
+      <div class="feedback-box" id="feedback-box">
+        <!-- Feedback da questão -->
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()" disabled>Anterior</button>
+        <button class="btn btn-confirm" id="btn-confirm" onclick="confirmAnswer()">Confirmar Resposta</button>
+        <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" disabled>Próxima</button>
+      </div>
+    </div>
+
+    <!-- Report View -->
+    <div class="report-container" id="report-view">
+      <h2>Relatório de Desempenho Final</h2>
+      <p>Confira seu resultado final no quiz de revisão do livro!</p>
+
+      <div class="score-circle">
+        <span class="score-number" id="percentage-score">0%</span>
+        <span class="score-label" id="score-text">0 de 40</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card" style="border-left: 4px solid var(--correct);">
+          <h4>Acertos</h4>
+          <p id="correct-count" style="color: var(--correct);">0</p>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--incorrect);">
+          <h4>Erros</h4>
+          <p id="incorrect-count" style="color: var(--incorrect);">0</p>
+        </div>
+      </div>
+
+      <div class="study-guide" id="study-guide">
+        <h3>Direcionamento para Estudo</h3>
+        <ul id="study-recommendations">
+          <!-- Recomendações de estudo -->
+        </ul>
+      </div>
+
+      <button class="btn btn-primary" style="margin-top: 25px; width: 100%;" onclick="restartQuiz()">Refazer Quiz de Revisão</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      // O Campo e a Cidade (Págs. 8 e 9)
+      {
+        topic: "O campo e a cidade",
+        question: "1. Segundo a página 8 do livro, como o espaço do campo (zona rural) é caracterizado em relação à vegetação?",
+        options: [
+          "A) É sempre composto 100% por florestas virgens sem estradas.",
+          "B) É uma região onde não existem animais nem plantas.",
+          "C) Nem sempre é uma região exclusivamente repleta de vegetação natural, com muitas árvores, plantas e animais.",
+          "D) É exatamente igual à cidade, cheia de prédios e avenidas asfaltadas.",
+          "E) É um local onde não há moradias ou plantações."
+        ],
+        correct: 2,
+        explanation: "Página 8: 'Diferentemente do que se pode imaginar, nem sempre o espaço do campo, a zona rural, é uma região exclusivamente repleta de vegetação natural, com muitas árvores, plantas e animais.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "2. Por que a presença de parques e praças com árvores na cidade não a transforma em zona rural?",
+        options: [
+          "A) Porque na cidade as plantas são artificiais.",
+          "B) Porque as praças são apenas para carros estacionarem.",
+          "C) Porque, mesmo com áreas verdes, a cidade mantém suas características de zona urbana.",
+          "D) Porque não existem animais nas praças das cidades.",
+          "E) Porque na cidade as pessoas não gostam de natureza."
+        ],
+        correct: 2,
+        explanation: "Página 8: 'Na cidade, por exemplo, há parques e praças com árvores e plantas, inclusive animais, e nem por isso ela deixa de ser uma zona urbana.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "3. O que alguns habitantes de áreas rurais relativamente isoladas precisam fazer para acessar serviços como escolas, hospitais e bancos?",
+        options: [
+          "A) Fazer longos deslocamentos para cidades próximas.",
+          "B) Precisam construir seus próprios bancos no campo.",
+          "C) Usar a internet sem nunca sair de casa.",
+          "D) Mudar de país imediatamente.",
+          "E) Esperar que a cidade se mude para o campo."
+        ],
+        correct: 0,
+        explanation: "Página 8: 'Existem áreas rurais que são relativamente isoladas, de modo que seus habitantes precisam fazer longos deslocamentos para cidades próximas em busca de alguns serviços, como escolas, hospitais e bancos.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "4. O que significa dizer que as zonas urbanas e rurais estão 'interligadas'?",
+        options: [
+          "A) Significa que são divididas por um muro gigante.",
+          "B) Significa que o campo e a cidade produzem exatamente as mesmas coisas.",
+          "C) Significa que estão conectadas, e seus moradores convivem e utilizam os mesmos serviços.",
+          "D) Significa que ninguém pode viajar de uma zona para outra.",
+          "E) Significa que as duas zonas possuem apenas estradas de terra."
+        ],
+        correct: 2,
+        explanation: "Página 8: '...muitas zonas urbanas e rurais que são bastante conectadas, isto é, os moradores dessas zonas convivem e utilizam os mesmos serviços. Isso significa que esses espaços estão interligados.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "5. O que consta no glossário da página 8 para a palavra 'Interligados'?",
+        options: [
+          "A) Longe, afastados.",
+          "B) Antigos, ultrapassados.",
+          "C) Ligados, conectados.",
+          "D) Perigosos, isolados.",
+          "E) Grandes, populosos."
+        ],
+        correct: 2,
+        explanation: "Página 8 (Glossário): 'Interligados: ligados, conectados.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "6. O que é comum observar na paisagem das áreas urbanas para me abrigar muitas pessoas?",
+        options: [
+          "A) Apenas pequenas ocas de palha.",
+          "B) Apenas grandes plantações de trigo.",
+          "C) Sítios e fazendas isoladas.",
+          "D) Edifícios grandes com vários andares (arranha-céus).",
+          "E) Apenas campos de futebol de terra."
+        ],
+        correct: 3,
+        explanation: "Página 9: 'Nas áreas urbanas, vivem e trabalham muitas pessoas. Para abrigar tanta gente nas cidades, é comum observar na paisagem edifícios grandes com vários andares (arranha-céus).'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "7. Como costumam ser as construções e as ruas na zona rural descritas na página 9?",
+        options: [
+          "A) Os prédios são colados uns nos outros e as ruas têm semáforos em toda parte.",
+          "B) As construções são distantes umas das outras e há ruas de terra, sem asfalto.",
+          "C) Todas as ruas são asfaltadas e cheias de viadutos.",
+          "D) Não existem casas na zona rural, apenas barracas.",
+          "E) As casas são construídas em cima de árvores."
+        ],
+        correct: 1,
+        explanation: "Página 9: 'As construções geralmente são mais distantes umas das outras, e há ruas de terra, sem asfalto.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "8. Como é o ritmo de vida no campo em comparação com o ritmo da cidade?",
+        options: [
+          "A) No campo é muito mais rápido e estressante.",
+          "B) É exatamente igual em ambos os lugares.",
+          "C) Na cidade ninguém trabalha e tudo é devagar.",
+          "D) O ritmo no campo é diferente e menos acelerado.",
+          "E) No campo o tempo passa duas vezes mais rápido."
+        ],
+        correct: 3,
+        explanation: "Página 9: 'No campo, o ritmo de vida é diferente, menos acelerado, em comparação com o ritmo da cidade.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "9. Quais atividades de produção de alimentos são realizadas pelas pessoas na zona rural segundo a página 9?",
+        options: [
+          "A) Fabricação de robôs e computadores.",
+          "B) Produção de refrigerantes e enlatados nas fábricas.",
+          "C) Cultivo de hortas e pomares e criação de animais (como galinhas e porcos).",
+          "D) Construção de arranha-céus e shoppings.",
+          "E) Apenas pesca em alto-mar."
+        ],
+        correct: 2,
+        explanation: "Página 9: 'Na zona rural, as pessoas cultivam hortas e pomares e criam animais (como galinhas e porcos) para consumo próprio, entre outras atividades.'"
+      },
+      {
+        topic: "O campo e a cidade",
+        question: "10. De onde vem a maioria dos alimentos consumidos pelas pessoas no campo?",
+        options: [
+          "A) De supermercados e produtos industrializados.",
+          "B) Do contato direto com a natureza, conhecendo a origem dos alimentos sem depender tanto de produtos industrializados.",
+          "C) De entregas rápidas feitas por aplicativos da cidade.",
+          "D) De importação vinda de outros países.",
+          "E) Apenas de rações produzidas em fábricas."
+        ],
+        correct: 1,
+        explanation: "Página 9: 'As pessoas que vivem no campo geralmente têm mais contato com a natureza, conhecendo, muitas vezes, a origem dos alimentos que consomem e dependendo menos de produtos industrializados...'"
+      },
+
+      // A vida no campo e na cidade (Pág. 10)
+      {
+        topic: "A vida no campo e na cidade",
+        question: "11. Onde costumam acontecer as brincadeiras das crianças que vivem no campo?",
+        options: [
+          "A) Exclusivamente dentro de quartos fechados.",
+          "B) Apenas em videogames e computadores.",
+          "C) Dentro de shoppings center e cinemas.",
+          "D) Ao ar livre e em contato com a natureza (como nadar em rios, banhar-se em cachoeiras e cultivar plantas).",
+          "E) Em pátios cobertos de grandes prédios."
+        ],
+        correct: 3,
+        explanation: "Página 10: 'Entre as crianças que vivem no campo, por exemplo, as brincadeiras costumam ser ao ar livre e em contato com a natureza. Há crianças que nadam em rios e represas, brincam com animais, banham-se em cachoeiras, sobem em árvores, cultivam plantas, etc.'"
+      },
+      {
+        topic: "A vida no campo e na cidade",
+        question: "12. Onde as brincadeiras acontecem com mais frequência para as crianças que vivem nas cidades?",
+        options: [
+          "A) Dentro de lagoas e represas naturais.",
+          "B) Dentro da moradia, na casa de amigos ou familiares e em áreas de lazer de condomínios e prédios.",
+          "C) No topo das árvores das praças.",
+          "D) Nas florestas e matas fechadas do município.",
+          "E) Apenas nos ônibus a caminho da escola."
+        ],
+        correct: 1,
+        explanation: "Página 10: 'Já entre as crianças que vivem em cidades, as brincadeiras acontecem com mais frequência dentro da moradia, na casa de amigos ou familiares e em áreas de lazer de condomínios e prédios.'"
+      },
+      {
+        topic: "A vida no campo e na cidade",
+        question: "13. O que o livro afirma sobre a frequência com que as crianças das cidades frequentam parques e praças?",
+        options: [
+          "A) Elas vão aos parques todos os dias sem falta.",
+          "B) É proibido para crianças entrarem em parques nas cidades.",
+          "C) Embora existam parques e praças, as crianças que vivem nas cidades nem sempre costumam frequentá-los.",
+          "D) Todas as crianças da cidade moram dentro dos parques.",
+          "E) Os parques das cidades são usados apenas por animais."
+        ],
+        correct: 2,
+        explanation: "Página 10: 'Embora existam parques e praças nas zonas urbanas, as crianças que vivem nas cidades nem sempre costumam frequentá-los.'"
+      },
+      {
+        topic: "A vida no campo e na cidade",
+        question: "14. De qual etnia indígena são as crianças mostradas brincando no rio na foto da página 10?",
+        options: [
+          "A) Etnia Guarani.",
+          "B) Etnia Yanomami.",
+          "C) Etnia Xavante.",
+          "D) Etnia Sateré-Mawé (da Aldeia Nova Alegria no Amazonas).",
+          "E) Etnia Tupi-Guarani."
+        ],
+        correct: 3,
+        explanation: "Página 10 (Legenda da foto): 'Crianças indígenas da etnia Sateré-Mawé da Aldeia Nova Alegria brincando no rio Uaicurapá, no município de Parintins, no Amazonas, 2024.'"
+      },
+      {
+        topic: "A vida no campo e na cidade",
+        question: "15. Em qual cidade foi tirada a foto das crianças brincando em um playground urbano na página 10?",
+        options: [
+          "A) São Paulo (SP).",
+          "B) Curitiba (Paraná).",
+          "C) Salvador (Bahia).",
+          "D) Manaus (Amazonas).",
+          "E) Rio de Janeiro (RJ)."
+        ],
+        correct: 2,
+        explanation: "Página 10 (Legenda da foto): 'Crianças brincando em playground em Salvador. Essa cidade é a capital do estado da Bahia, na região Nordeste do Brasil...'"
+      },
+
+      // A alimentação no campo e na cidade (Pág. 11)
+      {
+        topic: "A alimentação no campo e na cidade",
+        question: "16. Como são os alimentos consumidos pelas pessoas nas zonas rurais segundo a página 11?",
+        options: [
+          "A) São caros e cheios de conservantes.",
+          "B) São apenas congelados e industrializados.",
+          "C) São produzidos em áreas de cultivo próximas às moradias e tendem a ser mais baratos e frescos (alimentos in natura).",
+          "D) São trazidos de avião de outros países.",
+          "E) São comprados exclusivamente em grandes shoppings."
+        ],
+        correct: 2,
+        explanation: "Página 11: 'Nas zonas rurais, por exemplo, as pessoas geralmente consomem alimentos produzidos em áreas de cultivo próximas às moradias delas... por isso que no campo alimentos in natura tendem a ser mais baratos e frescos.'"
+      },
+      {
+        topic: "A alimentação no campo e na cidade",
+        question: "17. O que são 'alimentos in natura' de acordo com o quadro da página 11?",
+        options: [
+          "A) Alimentos fabricados com muito açúcar e sal.",
+          "B) Alimentos obtidos de plantas ou animais que não passaram por alterações após tirados da natureza.",
+          "C) Alimentos embalados em latas de metal.",
+          "D) Comidas vendidas apenas em lanchonetes de fast-food.",
+          "E) Alimentos em pó feitos em laboratórios."
+        ],
+        correct: 1,
+        explanation: "Página 11 (Quadro lateral): 'Alimentos in natura: alimentos em estado natural, obtidos para consumo logo após serem obtidos de plantas ou animais.'"
+      },
+      {
+        topic: "A alimentação no campo e na cidade",
+        question: "18. Por que os alimentos in natura não costumam ser tão baratos e frescos nas zonas urbanas?",
+        options: [
+          "A) Porque os produtores moram nas cidades e cobram caro.",
+          "B) Porque a cidade proíbe a venda de frutas e verduras.",
+          "C) Porque os produtores estão nas zonas rurais e o transporte até a cidade pode envolver grandes distâncias.",
+          "D) Porque nas cidades não existem feiras ou mercados.",
+          "E) Porque a água da cidade estraga as verduras imediatamente."
+        ],
+        correct: 2,
+        explanation: "Página 11: 'Já nas zonas urbanas, alimentos in natura não costumam ser tão baratos e frescos. Isso ocorre porque os produtores estão nas zonas rurais e o transporte desses alimentos pode envolver grandes distâncias.'"
+      },
+      {
+        topic: "A alimentação no campo e na cidade",
+        question: "19. Qual é o tipo de produto que tem grande oferta e consumo nas cidades, mesmo contendo alta concentração de conservantes, sal ou açúcar?",
+        options: [
+          "A) Produtos orgânicos de horta.",
+          "B) Alimentos in natura.",
+          "C) Ovos caipiras colhidos na hora.",
+          "D) Produtos industrializados.",
+          "E) Peixes frescos direto do rio."
+        ],
+        correct: 3,
+        explanation: "Página 11: 'Por outro lado, há grande oferta de produtos industrializados, com alta concentração de conservantes, sal ou açúcar. O consumo desses produtos nas cidades é alto...'"
+      },
+      {
+        topic: "A alimentação no campo e na cidade",
+        question: "20. Por que as pessoas nas cidades têm menos tempo para preparar suas refeições?",
+        options: [
+          "A) Porque elas dormem 15 horas por dia.",
+          "B) Porque gastam mais tempo em deslocamentos para ir à escola ou ao trabalho.",
+          "C) Porque no campo os relógios andam mais devagar.",
+          "D) Porque é proibido cozinhar dentro de apartamentos.",
+          "E) Porque não existem fogões nas áreas urbanas."
+        ],
+        correct: 1,
+        explanation: "Página 11: '...pois as pessoas geralmente gastam mais tempo em deslocamentos - para ir à escola ou ao trabalho, por exemplo - e, por isso, têm menos tempo para preparar suas refeições.'"
+      },
+      {
+        topic: "A alimentação no campo e na cidade",
+        question: "21. Existe uma regra rígida sobre como as pessoas se alimentam em cada região?",
+        options: [
+          "A) Sim, quem mora na cidade só pode comer produtos industrializados.",
+          "B) Sim, no campo é proibido comer produtos com açúcar.",
+          "C) Não há regras, pois a alimentação depende também dos gostos e costumes de cada família.",
+          "D) Sim, a lei obriga todos os brasileiros a comerem as mesmas coisas.",
+          "E) Não, porque no campo ninguém se alimenta."
+        ],
+        correct: 2,
+        explanation: "Página 11: 'Porém, é importante lembrar que não há regras sobre como as pessoas se alimentam em cada região, pois isso também depende dos gostos e dos costumes de cada família.'"
+      },
+      {
+        topic: "A alimentação no campo e na cidade",
+        question: "22. O que a lei brasileira que começou a valer em 2023 exige nos rótulos de alimentos industrializados?",
+        options: [
+          "A) Exige a foto do fazendeiro que colheu os ingredientes.",
+          "B) Traz informações no rótulo alertando se o produto tem alto teor de sódio (sal), açúcar adicionado ou gordura saturada.",
+          "C) Exige que todos os produtos tenham o mesmo preço.",
+          "D) Proíbe a venda de qualquer comida enlatada.",
+          "E) Obriga a embalagem a ser totalmente transparente."
+        ],
+        correct: 1,
+        explanation: "Página 11 (Para Conviver): 'A partir de 2023, uma lei começou a valer em todo o país: alimentos industrializados com muito sódio (sal), açúcar ou gordura devem trazer essas informações no rótulo do produto.'"
+      },
+
+      // Trabalho e migração (Pág. 25)
+      {
+        topic: "Trabalho e migração",
+        question: "23. O que acontecia com a maioria da população brasileira até meados do século passado (século XX)?",
+        options: [
+          "A) A maioria da população vivia e trabalhava no campo.",
+          "B) A maioria da população vivia em grandes metrópoles.",
+          "C) Ninguém trabalhava na agricultura no Brasil.",
+          "D) Toda a população morava na Região Metropolitana de Curitiba.",
+          "E) O Brasil não tinha moradores."
+        ],
+        correct: 0,
+        explanation: "Página 25: 'Até meados do século passado, a maioria dos brasileiros vivia e trabalhava no campo.'"
+      },
+      {
+        topic: "Trabalho e migração",
+        question: "24. O que motivou muitos brasileiros a migrarem para as cidades a partir dos anos 1950?",
+        options: [
+          "A) O fim de todas as fazendas do Brasil.",
+          "B) A proibição de morar no campo.",
+          "C) A crescente industrialização da zona rural e busca por novas oportunidades de trabalho e melhores condições de vida.",
+          "D) O desejo de viver sem trabalhar.",
+          "E) O aumento dos ataques de animais selvagens."
+        ],
+        correct: 2,
+        explanation: "Página 25: 'Mas, com a crescente industrialização da zona rural a partir dos anos 1950, muitos brasileiros migraram para as cidades, em busca de novas oportunidades de trabalho e melhores condições de vida.'"
+      },
+      {
+        topic: "Trabalho e migração",
+        question: "25. Qual foi o impacto da introdução de máquinas e novas tecnologias no cultivo da terra?",
+        options: [
+          "A) Aumentou a necessidade de contratar mais trabalhadores manuais.",
+          "B) Fez com que as plantas do campo parassem de crescer.",
+          "C) Agilizou os processos agrícolas, mas acabou reduzindo as possibilidades de trabalho no campo.",
+          "D) Eliminou totalmente a necessidade de tratores.",
+          "E) Fez todas as pessoas voltarem a morar na zona rural."
+        ],
+        correct: 2,
+        explanation: "Página 25: 'A introdução de máquinas e outras tecnologias no cultivo da terra visava agilizar os processos agrícolas. Porém, essas inovações acabaram reduzindo as possibilidades de trabalho para os que viviam no campo.'"
+      },
+      {
+        topic: "Trabalho e migração",
+        question: "26. O que atraía os camponeses para as cidades a partir da década de 1950?",
+        options: [
+          "A) A falta de escolas nas cidades.",
+          "B) O menor número de lojas nas zonas urbanas.",
+          "C) O ar mais limpo e a ausência de carros.",
+          "D) O crescimento e a diversificação das indústrias, dos comércios e dos serviços nas áreas urbanas.",
+          "E) A oportunidade de plantar árvores nos apartamentos."
+        ],
+        correct: 3,
+        explanation: "Página 25: 'O crescimento e a diversificação das indústrias, dos comércios e dos serviços nas áreas urbanas a partir dessa época também atraíam os camponeses para as cidades.'"
+      },
+      {
+        topic: "Trabalho e migração",
+        question: "27. Em qual década mais da metade da população brasileira passou a viver nas cidades?",
+        options: [
+          "A) Anos 1910.",
+          "B) Anos 1930.",
+          "C) Anos 2010.",
+          "D) Anos 1970.",
+          "E) Anos 2020."
+        ],
+        correct: 3,
+        explanation: "Página 25: 'Já nos anos 1970, mais da metade da população brasileira vivia em cidades.'"
+      },
+      {
+        topic: "Trabalho e migração",
+        question: "28. Quais oportunidades de trabalho relacionadas à produção agropecuária ainda existem no campo hoje?",
+        options: [
+          "A) Apenas fabricação de celulares.",
+          "B) Cultivo de plantas, criação de animais e indústrias de beneficiamento.",
+          "C) Produção exclusiva de carros elétricos.",
+          "D) Lojas de departamento e bancos digitais.",
+          "E) Apenas aviação e turismo espacial."
+        ],
+        correct: 1,
+        explanation: "Página 25: 'Há diversas oportunidades de trabalho relacionadas à produção agropecuária, como o cultivo de plantas, a criação de animais, indústrias de beneficiamento, etc.'"
+      },
+      {
+        topic: "Trabalho e migração",
+        question: "29. De acordo com o glossário da página 25, o que são 'Indústrias de beneficiamento'?",
+        options: [
+          "A) Empresas que doam alimentos para a cidade gratuitamente.",
+          "B) Pequenas, médias ou grandes indústrias que preparam produtos do campo para o consumo ou para irem para outras indústrias (limpam, separam, descascam, cortam e lavam).",
+          "C) Fábricas de tratores e colheitadeiras pesadas.",
+          "D) Mercados que vendem produtos importados.",
+          "E) Lojas que constroem prédios na zona urbana."
+        ],
+        correct: 1,
+        explanation: "Página 25 (Glossário): 'Indústrias de beneficiamento: pequenas, médias ou grandes indústrias que preparam produtos do campo para o consumo ou para irem para outras indústrias. No caso dos produtos agrícolas, por exemplo, limpam, separam, descascam, cortam e lavam vegetais, fazendo o beneficiamento...'"
+      },
+      {
+        topic: "Trabalho e migração",
+        question: "30. Qual exemplo de plantação na cidade de Ibiúna (SP) é mostrado na imagem da página 25?",
+        options: [
+          "A) Plantação de café.",
+          "B) Criação de gado leiteiro.",
+          "C) Plantação de verduras com uso de tratores.",
+          "D) Plantação de morangos em estufas.",
+          "E) Colheita manual de cana-de-açúcar."
+        ],
+        correct: 2,
+        explanation: "Página 25 (Legenda da foto): 'Plantação de verduras em Ibiúna, no estado de São Paulo. Com a introdução de máquinas no campo, como o trator, os trabalhos agrícolas deixaram de exigir tanta mão de obra...'"
+      },
+
+      // O que é lazer? (Módulo 13 - Pág. 25)
+      {
+        topic: "O que é lazer?",
+        question: "31. Como o livro define 'lazer' na introdução do Módulo 13?",
+        options: [
+          "A) Qualquer tipo de trabalho duro feito no fim de semana.",
+          "B) Toda atividade que envolve descanso e diversão.",
+          "C) O tempo gasto estudando para as provas da escola.",
+          "D) A obrigação de fazer tarefas domésticas.",
+          "E) A viagem diária de ônibus para o trabalho."
+        ],
+        correct: 1,
+        explanation: "Página 25 (Módulo 13): 'Toda atividade que envolve descanso e diversão pode ser chamada de lazer.'"
+      },
+      {
+        topic: "O que é lazer?",
+        question: "32. Por que as crianças geralmente têm mais tempo de lazer do que os adultos?",
+        options: [
+          "A) Porque as crianças dormem menos horas.",
+          "B) Porque os adultos brincam o dia todo.",
+          "C) Porque as crianças não devem trabalhar.",
+          "D) Porque as escolas duram apenas 10 minutos.",
+          "E) Porque é proibido adultos terem descanso."
+        ],
+        correct: 2,
+        explanation: "Página 25 (Módulo 13): 'Como as crianças não devem trabalhar, elas geralmente têm mais tempo de lazer do que os adultos.'"
+      },
+      {
+        topic: "O que é lazer?",
+        question: "33. O lazer é algo exclusivo do universo infantil?",
+        options: [
+          "A) Sim, os adultos nunca podem ter momentos de lazer.",
+          "B) Não, o lazer não é exclusivo do universo infantil, ele é muito importante para as pessoas de todas as idades.",
+          "C) Sim, apenas crianças de até 10 anos podem descansar.",
+          "D) Não, mas só serve para idosos que não trabalham mais.",
+          "E) Sim, porque adultos só devem trabalhar sem parar."
+        ],
+        correct: 1,
+        explanation: "Página 25 (Módulo 13): 'Porém, o lazer não é exclusivo do universo infantil, ele é muito importante para as pessoas de todas as idades.'"
+      },
+      {
+        topic: "O que é lazer?",
+        question: "34. Quem precisa ter momentos de descanso segundo o texto sobre os adultos?",
+        options: [
+          "A) Apenas os adultos que trabalham na rua.",
+          "B) Apenas os adultos que não têm filhos.",
+          "C) Tanto os adultos que trabalham fora de casa quanto os que trabalham de casa.",
+          "D) Apenas os professores e engenheiros.",
+          "E) Nenhum adulto precisa de descanso."
+        ],
+        correct: 2,
+        explanation: "Página 25 (Módulo 13): 'É fundamental que os adultos, tanto os que trabalham fora de casa quanto os que trabalham de casa, tenham momentos de descanso.'"
+      },
+      {
+        topic: "O que é lazer?",
+        question: "35. Quais são as profissões dos três adultos que dão depoimentos sobre seu lazer na página 25 (Módulo 13)?",
+        options: [
+          "A) Médico, dentista e piloto.",
+          "B) Advogado (que canta), professor de Inglês (que fotografa) e engenheira (que cozinha).",
+          "C) Policial, bombeiro e motorista.",
+          "D) Agricultor, pescador e pedreiro.",
+          "E) Padeiro, pintor e veterinário."
+        ],
+        correct: 1,
+        explanation: "Página 25 (Módulo 13): Balões de fala mostram: o advogado (que gosta de cantar), o professor de Inglês (que viaja tirando fotos com a esposa) e a engenheira (que adora cozinhar nas horas vagas)."
+      },
+
+      // Adultos também brincam (Módulo 13 - Pág. 26)
+      {
+        topic: "Adultos também brincam",
+        question: "36. O brincar e o divertir-se são importantes para quais pessoas segundo a página 26?",
+        options: [
+          "A) Apenas para bebês e crianças pequenas.",
+          "B) Para todos os seres humanos (adultos, crianças, jovens e idosos).",
+          "C) Apenas para os estudantes no recreio.",
+          "D) Apenas para quem vive no campo.",
+          "E) Exclusivamente para atletas profissionais."
+        ],
+        correct: 1,
+        explanation: "Página 26 (Módulo 13): 'Brincar é muito importante não só para as crianças, mas para todos os seres humanos. Todos, adultos e crianças, jovens e idosos, podem e devem se divertir.'"
+      },
+      {
+        topic: "Adultos também brincam",
+        question: "37. Enquanto as crianças têm brinquedos ou brincadeiras favoritas, o que os adultos em geral têm em seus momentos livres?",
+        options: [
+          "A) Deveres de casa diários.",
+          "B) Obrigações empresariais.",
+          "C) Hobbies (passatempos praticados exclusivamente como forma de lazer).",
+          "D) Aulas obrigatórias de matemática.",
+          "E) Turnos extras de trabalho noturno."
+        ],
+        correct: 2,
+        explanation: "Página 26 (Módulo 13): 'Enquanto as crianças têm brinquedos ou brincadeiras favoritos, os adultos, em geral, têm hobbies. Hobby é uma palavra inglesa que designa atividades exercidas exclusivamente como forma de lazer, distração ou passatempo...'"
+      },
+      {
+        topic: "Adultos também brincam",
+        question: "38. Quais exemplos de hobbies são citados no texto da página 26?",
+        options: [
+          "A) Dirigir caminhão, limpar a casa e pagar contas.",
+          "B) Colecionar coisas, pintar, desenhar e tocar um instrumento musical.",
+          "C) Dormir na aula, lavar louça e consertar o telhado.",
+          "D) Construir prédios e asfaltar estradas de terra.",
+          "E) Trabalhar na fábrica e colher legumes."
+        ],
+        correct: 1,
+        explanation: "Página 26 (Módulo 13): 'Colecionar coisas pode ser um hobby. Pintar, desenhar e tocar um instrumento musical também.'"
+      },
+      {
+        topic: "Adultos também brincam",
+        question: "39. O que os adultos indígenas da etnia Guarani estão jogando na imagem da página 26?",
+        options: [
+          "A) Futebol de campo.",
+          "B) Basquete na quadra.",
+          "C) Vôlei de praia.",
+          "D) Peteca feita de folha de palmeira (em Bertioga, SP).",
+          "E) Videogame portátil."
+        ],
+        correct: 3,
+        explanation: "Página 26 (Legenda da foto): 'Pessoas indígenas da etnia Guarani jogando peteca feita de folha de palmeira em Bertioga, São Paulo, 2024.'"
+      },
+      {
+        topic: "Adultos também brincam",
+        question: "40. Quais outras atividades de lazer praticadas por adultos são mostradas nas fotos da página 26?",
+        options: [
+          "A) Jogar capoeira em espaço público, praticar slackline e jogar basquete.",
+          "B) Correr de carro, andar de avião e nadar no oceano.",
+          "C) Subir em árvores altas e caçar animais.",
+          "D) Andar a cavalo, andar de trator e arar a terra.",
+          "E) Costurar roupas e fabricar sapatos."
+        ],
+        correct: 0,
+        explanation: "Página 26 (Fotos): As legendas mostram 'Homens jogando capoeira em espaço público em Salvador', 'Mulher praticando slackline no Parque Augusta em São Paulo' e 'Pessoas jogando basquete em Santarém, Pará'."
+      }
+    ];
+
+    let currentQuestionIdx = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let confirmedStatus = new Array(questions.length).fill(false);
+
+    function initGrid() {
+      const gridContainer = document.getElementById('question-grid');
+      gridContainer.innerHTML = '';
+
+      questions.forEach((_, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'grid-btn';
+        btn.innerText = idx + 1;
+        btn.id = `grid-btn-${idx}`;
+        btn.onclick = () => jumpToQuestion(idx);
+        gridContainer.appendChild(btn);
+      });
+    }
+
+    function updateGridStatus() {
+      questions.forEach((_, idx) => {
+        const btn = document.getElementById(`grid-btn-${idx}`);
+        btn.className = 'grid-btn';
+
+        if (idx === currentQuestionIdx) {
+          btn.classList.add('active');
+        }
+
+        if (confirmedStatus[idx]) {
+          if (userAnswers[idx] === questions[idx].correct) {
+            btn.classList.add('confirmed-correct');
+          } else {
+            btn.classList.add('confirmed-incorrect');
+          }
+        }
+      });
+    }
+
+    function jumpToQuestion(idx) {
+      currentQuestionIdx = idx;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestionIdx];
+      
+      document.getElementById('question-badge').innerText = `Questão ${currentQuestionIdx + 1} de ${questions.length}`;
+      document.getElementById('topic-badge').innerText = q.topic;
+      document.getElementById('question-text').innerText = q.question;
+      
+      // Barra de progresso
+      const progress = ((currentQuestionIdx + 1) / questions.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+
+      // Atualiza o estado da grelha de navegação
+      updateGridStatus();
+
+      // Renderizar opções
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        if (userAnswers[currentQuestionIdx] === idx) {
+          btn.classList.add('selected');
+        }
+
+        if (confirmedStatus[currentQuestionIdx]) {
+          btn.disabled = true;
+          if (idx === q.correct) {
+            btn.classList.add('correct');
+          } else if (userAnswers[currentQuestionIdx] === idx) {
+            btn.classList.add('incorrect');
+          }
+        }
+
+        btn.onclick = () => selectOption(idx);
+
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'option-letter';
+        letterSpan.innerText = String.fromCharCode(65 + idx);
+
+        const textSpan = document.createElement('span');
+        textSpan.innerText = opt.substring(3);
+
+        btn.appendChild(letterSpan);
+        btn.appendChild(textSpan);
+        optionsContainer.appendChild(btn);
+      });
+
+      // Controles
+      document.getElementById('btn-prev').disabled = currentQuestionIdx === 0;
+      
+      const confirmBtn = document.getElementById('btn-confirm');
+      const nextBtn = document.getElementById('btn-next');
+      const feedbackBox = document.getElementById('feedback-box');
+
+      if (confirmedStatus[currentQuestionIdx]) {
+        confirmBtn.disabled = true;
+        nextBtn.disabled = false;
+        showFeedback();
+      } else {
+        confirmBtn.disabled = userAnswers[currentQuestionIdx] === null;
+        nextBtn.disabled = true;
+        feedbackBox.style.display = 'none';
+      }
+
+      if (currentQuestionIdx === questions.length - 1 && confirmedStatus[currentQuestionIdx]) {
+        nextBtn.innerText = "Ver Relatório Final";
+      } else {
+        nextBtn.innerText = "Próxima";
+      }
+    }
+
+    function selectOption(idx) {
+      if (confirmedStatus[currentQuestionIdx]) return;
+      userAnswers[currentQuestionIdx] = idx;
+      
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach((btn, i) => {
+        if (i === idx) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+
+      document.getElementById('btn-confirm').disabled = false;
+    }
+
+    function confirmAnswer() {
+      if (userAnswers[currentQuestionIdx] === null) return;
+      
+      confirmedStatus[currentQuestionIdx] = true;
+      showFeedback();
+      loadQuestion();
+    }
+
+    function showFeedback() {
+      const q = questions[currentQuestionIdx];
+      const selected = userAnswers[currentQuestionIdx];
+      const feedbackBox = document.getElementById('feedback-box');
+      
+      feedbackBox.style.display = 'block';
+      if (selected === q.correct) {
+        feedbackBox.className = 'feedback-box correct';
+        feedbackBox.innerHTML = `<strong>✨ Resposta Correta!</strong><br>${q.explanation}`;
+      } else {
+        feedbackBox.className = 'feedback-box incorrect';
+        feedbackBox.innerHTML = `<strong>❌ Resposta Incorreta.</strong> A opção certa é a letra <strong>${String.fromCharCode(65 + q.correct)}</strong>.<br><strong>Explicação do Livro:</strong> ${q.explanation}`;
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIdx < questions.length - 1) {
+        currentQuestionIdx++;
+        loadQuestion();
+      } else {
+        showReport();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        loadQuestion();
+      }
+    }
+
+    function showReport() {
+      document.getElementById('quiz-view').style.display = 'none';
+      document.getElementById('report-view').style.display = 'block';
+
+      let correctCount = 0;
+      let errorsByTopic = {};
+
+      questions.forEach((q, idx) => {
+        if (userAnswers[idx] === q.correct) {
+          correctCount++;
+        } else {
+          errorsByTopic[q.topic] = (errorsByTopic[q.topic] || 0) + 1;
+        }
+      });
+
+      const incorrectCount = questions.length - correctCount;
+      const percentage = Math.round((correctCount / questions.length) * 100);
+
+      document.getElementById('percentage-score').innerText = `${percentage}%`;
+      document.getElementById('score-text').innerText = `${correctCount} de ${questions.length} questões`;
+      document.getElementById('correct-count').innerText = correctCount;
+      document.getElementById('incorrect-count').innerText = incorrectCount;
+
+      const recommendationsUl = document.getElementById('study-recommendations');
+      recommendationsUl.innerHTML = '';
+
+      if (incorrectCount === 0) {
+        recommendationsUl.innerHTML = '<li><strong>Parabéns Perfeito! 🎉</strong> Você dominou completamente todo o conteúdo do livro de História!</li>';
+      } else {
+        if (errorsByTopic["O campo e a cidade"]) {
+          recommendationsUl.innerHTML += '<li><strong>Páginas 8 e 9 (O campo e a cidade):</strong> Rever as diferenças de paisagem, moradias, ruas, o conceito de espaços interligados e o ritmo de vida no campo.</li>';
+        }
+        if (errorsByTopic["A vida no campo e na cidade"]) {
+          recommendationsUl.innerHTML += '<li><strong>Página 10 (A vida no campo e na cidade):</strong> Reeler onde costumam acontecer as brincadeiras das crianças no campo (ar livre, rios) e na cidade (moradias, condomínios).</li>';
+        }
+        if (errorsByTopic["A alimentação no campo e na cidade"]) {
+          recommendationsUl.innerHTML += '<li><strong>Página 11 (Alimentação no campo e na cidade):</strong> Reforçar a definição de alimentos <em>in natura</em>, produtos industrializados, tempo de deslocamento e a nova lei dos rótulos de 2023.</li>';
+        }
+        if (errorsByTopic["Trabalho e migração"]) {
+          recommendationsUl.innerHTML += '<li><strong>Página 25 (Trabalho e migração):</strong> Revisar o êxodo rural a partir de 1950, a introdução de máquinas, a atração das cidades nos anos 1970 e o conceito de indústrias de beneficiamento.</li>';
+        }
+        if (errorsByTopic["O que é lazer?"] || errorsByTopic["Adultos também brincam"]) {
+          recommendationsUl.innerHTML += '<li><strong>Páginas 25 e 26 do Módulo 13 (Lazer e Hobbies):</strong> Revisar a definição de lazer, a necessidade de descanso para os adultos e o conceito e exemplos de <em>hobbies</em>.</li>';
+        }
+      }
+    }
+
+    function restartQuiz() {
+      currentQuestionIdx = 0;
+      userAnswers = new Array(questions.length).fill(null);
+      confirmedStatus = new Array(questions.length).fill(false);
+      document.getElementById('quiz-view').style.display = 'block';
+      document.getElementById('report-view').style.display = 'none';
+      initGrid();
+      loadQuestion();
+    }
+
+    window.onload = () => {
+      initGrid();
+      loadQuestion();
+    };
+  </script>
+</body>
+</html>
